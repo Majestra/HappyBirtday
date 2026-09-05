@@ -5,6 +5,11 @@ let boxActions = [];
 let isOpened = false;
 let openDurationMs = 1500; // запасне значення, перерахується з реальної довжини анімації
 
+// Room.glb важить багато десятків МБ (текстури високої роздільної здатності),
+// тому він не поміщається у звичайний git-репозиторій (ліміт GitHub — 100 МБ).
+// Файл завантажений окремо як GitHub Release і підвантажується сюди напряму за посиланням.
+const ROOM_GLB_URL = 'https://github.com/Majestra/HappyBirtday/releases/download/v1/Room.glb';
+
 // Оголошуємо годинник на самому початку, щоб уникнути помилок ініціалізації
 const clock = new THREE.Clock();
 
@@ -80,8 +85,8 @@ function init() {
 
     const loader = new THREE.GLTFLoader();
 
-    // 4. Завантаження моделі кімнати (Room.glb)
-    loader.load('Room.glb', function (gltf) {
+    // 4. Завантаження моделі кімнати (Room.glb) — з GitHub Release (файл завеликий для звичайного репозиторію)
+    loader.load(ROOM_GLB_URL, function (gltf) {
         roomModel = gltf.scene;
         roomModel.visible = false; // Ховаємо кімнату до відкриття коробки
         enableShadows(roomModel);
@@ -90,7 +95,8 @@ function init() {
         scene.add(roomModel);
         console.log('Кімната успішно завантажена!');
     }, undefined, function (error) {
-        console.error('Помилка завантаження кімнати Room.glb:', error);
+        console.error('Помилка завантаження кімнати Room.glb з GitHub Release:', error);
+        console.warn('Перевір, що посилання ROOM_GLB_URL правильне і реліз опубліковано як Public.');
     });
 
     // 5. Завантаження моделі коробки (Box.glb)
