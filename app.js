@@ -4,6 +4,8 @@ let mixer;
 let boxActions = [];
 let isOpened = false;
 let openDurationMs = 1500; // запасне значення, перерахується з реальної довжини анімації
+let roomIsLoaded = false;   // Room.glb важить ~83МБ і може довантажуватись довше за анімацію коробки
+let boxAnimationFinished = false;
 
 // Оголошуємо годинник на самому початку, щоб уникнути помилок ініціалізації
 const clock = new THREE.Clock();
@@ -101,7 +103,9 @@ function init() {
         tuneImportedLights(roomModel);
         fixTextMaterial(roomModel);
         scene.add(roomModel);
+        roomIsLoaded = true;
         console.log('Кімната успішно завантажена!');
+        revealRoomIfReady(); // раптом коробка вже відкрилась, поки кімната ще вантажилась
     }, undefined, function (error) {
         console.error('Помилка завантаження кімнати Room.glb:', error);
     });
@@ -222,7 +226,7 @@ function onClickOpen() {
         });
         console.log('Анімація коробки запущена!');
 
-        // Таймер для конфетті та показу кімнати — підлаштований під реальну довжину анімації
+        // Конфеті — одразу, синхронно з анімацією коробки (незалежно від того, чи довантажилась кімната)
         setTimeout(() => {
             confetti({
                 particleCount: 150,
@@ -230,15 +234,28 @@ function onClickOpen() {
                 origin: { y: 0.6 }
             });
 
-            if (roomModel) roomModel.visible = true;
-            if (boxModel) boxModel.visible = false; // Ховаємо шматки коробки після розльоту
-
-            // Невелика пауза після феєрверку, щоб напис з'явився вже над відкритою кімнатою
-            setTimeout(showBirthdayMessage, 600);
+            boxAnimationFinished = true;
+            revealRoomIfReady();
         }, openDurationMs);
     } else {
         console.warn('Анімація ще не завантажилася або її немає.');
     }
+}
+
+// Показує кімнату лише коли ОБИДВІ умови виконані: анімація коробки завершилась
+// І кімната фізично довантажилась (Room.glb важить ~83МБ і може вантажитись
+// довше за анімацію — тому не можна покладатись на порядок подій).
+let roomRevealed = false;
+function revealRoomIfReady() {
+    if (roomRevealed) return;
+    if (!boxAnimationFinished || !roomIsLoaded) return;
+
+    roomRevealed = true;
+    if (roomModel) roomModel.visible = true;
+    if (boxModel) boxModel.visible = false; // Ховаємо шматки коробки після розльоту
+
+    // Невелика пауза після феєрверку, щоб напис з'явився вже над відкритою кімнатою
+    setTimeout(showBirthdayMessage, 600);
 }
 
 // Показує привітальний напис над кімнатою та запускає плаваючі сердечка
