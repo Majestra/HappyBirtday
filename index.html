@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Surprise</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0b0b1a;
+            font-family: sans-serif;
+        }
+        #instructions {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            text-align: center;
+            color: #ffffff;
+            font-size: 18px;
+            pointer-events: none;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            animation: pulse 1.5s infinite alternate;
+        }
+        @keyframes pulse {
+            from { opacity: 0.6; }
+            to { opacity: 1; }
+        }
+
+        /* --- Привітальний напис над кімнатою --- */
+        #birthday-message {
+            position: absolute;
+            top: 12%;
+            left: 50%;
+            width: 90%;
+            max-width: 900px;
+            transform: translate(-50%, -20px);
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 10;
+        }
+        #birthday-message.show {
+            animation: messageAppear 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        #birthday-message .msg-text {
+            display: inline-block;
+            font-family: 'Great Vibes', cursive;
+            font-size: clamp(38px, 7vw, 80px);
+            line-height: 1.2;
+            color: #fff;
+            background: linear-gradient(90deg, #ff9a9e, #fecfef, #ffd97a, #ff9a9e);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s linear infinite;
+            filter: drop-shadow(0 4px 14px rgba(255, 120, 160, 0.55));
+        }
+        #birthday-message .heart {
+            display: inline-block;
+            animation: heartbeat 1.1s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px rgba(255, 90, 120, 0.8));
+        }
+
+        @keyframes messageAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 40px) scale(0.7);
+                filter: blur(6px);
+            }
+            60% {
+                opacity: 1;
+                transform: translate(-50%, -10px) scale(1.08);
+                filter: blur(0px);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, 0) scale(1);
+            }
+        }
+        @keyframes shimmer {
+            to { background-position: 300% center; }
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.25); }
+            40% { transform: scale(0.95); }
+            60% { transform: scale(1.2); }
+        }
+
+        /* Плаваючі сердечка навколо напису */
+        .floating-heart {
+            position: absolute;
+            top: 100%;
+            font-size: 22px;
+            opacity: 0.9;
+            animation: floatUp 4.5s ease-in forwards;
+            pointer-events: none;
+        }
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-260px) translateX(var(--drift, 20px)) rotate(25deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="instructions">Натисни на коробку, щоб відкрити!</div>
+
+    <div id="birthday-message">
+        <span class="msg-text">З Днем Народження Кохана! <span class="heart">❤️</span></span>
+    </div>
+
+    <!-- Підключаємо Three.js та залежності через CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <!-- Підключаємо конфетті -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script src="app.js"></script>
+</body>
+</html>
